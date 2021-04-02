@@ -1,12 +1,12 @@
 // import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import SchemeBox from './components/schemeBox'
+import Page from './components/page'
 
 function App() {
   return (
     <div className="App">
-      <SchemeBox></SchemeBox>
+      <Page/>
     </div>
   );
 }
