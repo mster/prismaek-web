@@ -11,13 +11,13 @@ import './scheme.css'
 
 
 function Scheme (props) {
+    /* showing modal */
     const [show, setShow] = useState(false)
-
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    /* pinning */
     const [pinned, setPinned] = useState(false)
-
     const handlePin = () => {
         setPinned(!pinned)
 
@@ -26,14 +26,11 @@ function Scheme (props) {
         }
     }
 
+    /* expanding scheme */
     const [expanded, setExpanded] = useState(false)
     const handleExpand = () => setExpanded(!expanded)
 
-    const handleDelete = (props) => {
-        console.log(props)
-    }
-
-
+    /* build scheme */
     const scheme = () => {
         return props.scheme.map((value, index) => {
             value = `#${value}`
@@ -51,6 +48,7 @@ function Scheme (props) {
 
     }
 
+    /* build gradient */
     const gradient = () => {
         const colors = props.scheme.map(s => `#${s}`).join(', ')
         const dynamicGradient = {
@@ -67,6 +65,7 @@ function Scheme (props) {
         </>
     }
 
+    /* copies gradient css styling to clipboard */
     const copyGradient = (gradient) => {
         try {
             const stringified = JSON.stringify(gradient)
@@ -78,7 +77,13 @@ function Scheme (props) {
     }
 
 
-    return <div id="scheme" key={props.scheme[0]}>
+    return <div 
+        id={props.index}
+        draggable={true}
+        onDragOver={(event) => event.preventDefault()}
+        onDragStart={props.handleDrag}
+        onDrop={props.handleDrop}
+        >
         {/* Scheme Modal */}
         <Modal show={show} handleClose={handleClose} scheme={props.scheme}></Modal>
 
@@ -99,7 +104,7 @@ function Scheme (props) {
                         onClick={handleShow}
                     />
                     <Button
-                        variant={"outline-light"}
+                        variant={pinned ? "success" : "outline-light"}
                         tooltipText={'Pin me!'}
                         icon={pinned ? <PinFill/> : <Pin/>}
                         onClick={handlePin}

@@ -3,6 +3,7 @@ import { Component } from 'react'
 import SchemeBox from '../schemeBox/schemeBox'
 import ColorPicker from '../colorPicker/colorPicker'
 import ButtonBox from '../buttonBox/buttonBox'
+import copyToClipboard from '../../utils/clipboard'
 
 import axios from 'axios'
 
@@ -31,10 +32,17 @@ class Page extends Component {
         this.setState({ base: hex })
     }
 
+    handleSetSchemes = (schemes) => {
+        this.setState({ schemes })
+    }
+
     handleOnClickHex = ({ target }) => {
-        console.log(target)
-        this.setState({ base: target.id })
-        navigator.clipboard.writeText(target.id)
+        const hex = target.id
+
+        copyToClipboard(hex)
+        console.log('copied hex:', hex)
+        
+        this.setState({ base: hex })
     }
 
     handleBuildScheme = ({ target }) => {
@@ -59,7 +67,7 @@ class Page extends Component {
             updatedSchemes.splice(index, 1)
 
             this.setState({ schemes: updatedSchemes })
-            
+
             return
         }
 
@@ -74,9 +82,20 @@ class Page extends Component {
         )
         return (
             <div id="page" className="page">
-                <ColorPicker color={this.state.base} handler={this.handleColorUpdate}/>
-                <ButtonBox types={this.state.harmonies} handler={this.handleBuildScheme}/>
-                <SchemeBox schemes={this.state.schemes} onClick={this.handleOnClickHex} onDelete={this.handleDeleteScheme}/>
+                <ColorPicker 
+                    color={this.state.base} 
+                    handler={this.handleColorUpdate}
+                />
+                <ButtonBox 
+                    types={this.state.harmonies} 
+                    handler={this.handleBuildScheme}
+                />
+                <SchemeBox 
+                    schemes={this.state.schemes} 
+                    onClick={this.handleOnClickHex} 
+                    onDelete={this.handleDeleteScheme}
+                    setSchemes={this.handleSetSchemes}
+                />
             </div>
         )
     }

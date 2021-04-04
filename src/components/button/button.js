@@ -11,6 +11,8 @@ import './button.css'
 function Button (props) {
     /* button props */
     const buttonProps = {
+        id: props.id || null,
+        key: props.key || null,
         onClick: props.onClick || (() => {}),
         variant: props.variant || 'primary',
     }
@@ -36,7 +38,10 @@ function Button (props) {
 
 
     return <>
-        no overlay
+        <BootstrapButton {...buttonProps} className="button">
+            <>{props.icon}</>
+            <>{props.text ? ` ${props.text}`: ''}</>
+        </BootstrapButton>
     </>
 }
 
