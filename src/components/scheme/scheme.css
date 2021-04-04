@@ -1,0 +1,16 @@
+.hex-text {
+    font-weight: bold;
+    margin-top: 5%;
+    color: white;
+}
+
+.scheme-button {
+    margin: 5%;
+    margin-top: 15%;
+}
+
+.scheme {
+    border-radius: 1em;
+    overflow: hidden;
+    box-shadow: 0px 2px 4px 0px #000000;
+}
