@@ -28,19 +28,18 @@ function SchemeBox (props) {
                 scheme={val.scheme}
                 type={val.type}
                 base={val.base}
-                key={ind}
                 onClick={props.onClick}
                 onDelete={props.onDelete}
                 handleDrag={handleDrag}
                 handleDrop={handleDrop}
+                pinned={val.pinned}
+                key={ind}
             />
         })
     }
 
     return <Container id="schemeBox">
-        {
-            schemes()
-        }
+        {schemes()}
     </Container>
 }
 

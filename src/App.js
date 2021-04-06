@@ -1,14 +1,14 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+
+import { CookiesProvider } from 'react-cookie'
 import Page from './components/page/page'
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
+    <CookiesProvider>
       <Page/>
-    </div>
+    </CookiesProvider>
   );
 }
-
-export default App;

@@ -1,4 +1,6 @@
 import { Component } from 'react'
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 
 import SchemeBox from '../schemeBox/schemeBox'
 import ColorPicker from '../colorPicker/colorPicker'
@@ -10,11 +12,22 @@ import axios from 'axios'
 import './page.css'
 
 class Page extends Component {
-    state = {
-        base: '#31609B',
-        schemes: [],
-        harmonies: [],
-        error: false
+    static propTypes = {
+        cookies: instanceOf(Cookies).isRequired
+    }
+
+    constructor (props) {
+        super(props)
+
+        const { cookies } = props;
+        const pinnedSchemes = cookies.get('pinned-schemes') || []
+
+        this.state = {
+            base: '#31609B',
+            schemes: pinnedSchemes,
+            harmonies: [],
+            error: false
+        }
     }
 
     componentDidMount () {
@@ -52,7 +65,7 @@ class Page extends Component {
 
         axios.get(url)
         .then(response => {
-            this.setState({ schemes: [...this.state.schemes, response.data ]})
+            this.setState({ schemes: [response.data, ...this.state.schemes ]})
         })
         .catch(error => {
             console.error(error)
@@ -89,8 +102,9 @@ class Page extends Component {
                 <ButtonBox 
                     types={this.state.harmonies} 
                     handler={this.handleBuildScheme}
+                    variant={"outline-light"}
                 />
-                <SchemeBox 
+                <SchemeBox
                     schemes={this.state.schemes} 
                     onClick={this.handleOnClickHex} 
                     onDelete={this.handleDeleteScheme}
@@ -101,4 +115,4 @@ class Page extends Component {
     }
 }
 
-export default Page
+export default withCookies(Page)

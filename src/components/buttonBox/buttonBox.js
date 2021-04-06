@@ -1,34 +1,24 @@
-// import Container from 'react-bootstrap/Container'
-// import Button from 'react-bootstrap/Button'
-
-// import './buttonBox.css'
-
-// function ButtonBox (props) {
-//     return <Container fluid className="box">
-//         {props.types.map((val, ind) => {
-//             return <Button onClick={props.handler} id={val} key={`$button-${ind}`}>{val}</Button>
-//         })}
-//     </Container>
-// }
-
-// export default ButtonBox
-
 import Container from 'react-bootstrap/Container'
 import Button from '../button/button'
+
+import React from 'react'
 
 import './buttonBox.css'
 
 function ButtonBox (props) {
     return <Container fluid className="box">
         {props.types.map((val, ind) => {
-            return <>
-                <Button
-                    id={val}
-                    key={ind}
-                    onClick={props.handler}
-                    text={val}
-                />
-            </>
+            const parts = val.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1)
+            const text = parts.map(str => str.charAt(0).toUpperCase() + str.slice(1)).join(' ')
+
+            return <div key={ind} style={{ display: 'inline' }}>
+                    <Button
+                        id={val}
+                        onClick={props.handler}
+                        text={text}
+                        variant={props.variant || "primary"}
+                    />
+                </div>
         })}
     </Container>
 }

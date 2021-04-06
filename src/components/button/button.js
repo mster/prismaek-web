@@ -12,7 +12,6 @@ function Button (props) {
     /* button props */
     const buttonProps = {
         id: props.id || null,
-        key: props.key || null,
         onClick: props.onClick || (() => {}),
         variant: props.variant || 'primary',
     }
@@ -22,27 +21,27 @@ function Button (props) {
         const overlayTriggerProps = {
             delay: props.delay || { show: 200, hide: 800 },
             placement: props.placement || "right",
-            overlay: props.overlay || renderTooltip.apply(null, [props.tooltipText])
+            overlay: props.overlay || renderTooltip.apply(null, [props.tooltipText]),
+            animation: false
         }
 
-        return <div>
+        return <div className="button">
             <OverlayTrigger {...overlayTriggerProps}>
-                <BootstrapButton {...buttonProps} className="button">
-                    <>{props.icon}</>
-                    <>{props.text ? ` ${props.text}`: ''}</>
-                </BootstrapButton>
+                    <BootstrapButton {...buttonProps} className="button">
+                        {props.icon}{props.text ? ` ${props.text}`: ''}
+                    </BootstrapButton>
             </OverlayTrigger>
         </div>
+
 
     }
 
 
-    return <>
+    return <div className="button">
         <BootstrapButton {...buttonProps} className="button">
-            <>{props.icon}</>
-            <>{props.text ? ` ${props.text}`: ''}</>
+           {props.icon}{props.text ? ` ${props.text}`: ''}
         </BootstrapButton>
-    </>
+    </div>
 }
 
 function renderTooltip (text) {
