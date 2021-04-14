@@ -1,46 +1,54 @@
-import { useState } from 'react'
-import Container from 'react-bootstrap/Container'
+import { Container, Row } from 'react-bootstrap'
 
 import Scheme from '../scheme/scheme'
 
-function SchemeBox (props) {
-    const [dragId, setDragId] = useState()
+function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildShades }) {
+    let id;
 
     const handleDrag = (event) => {
-        setDragId(event.currentTarget.id)
+        id = Number(event.target.id);
+
+        console.log(id);
     }
 
     const handleDrop = (event) => {
-        const dropIndex = event.currentTarget.id
-        const dragIndex = dragId
+        const dropIndex = event.currentTarget.id;
+        const dragIndex = id
+        console.log("dropIndex=",dropIndex)
 
-        const newState = props.schemes
+        const newState = schemes
         const removed = newState.splice(dragIndex, 1)
+
+        console.log('removed=',removed)
         newState.splice(dropIndex, 0, removed[0])
 
-        props.setSchemes(newState)
+        setSchemes(newState)
     }
 
-    const schemes = () => {
-        return props.schemes.map((val, ind) => {
-            return <Scheme 
-                index={ind}
-                scheme={val.scheme}
-                type={val.type}
-                base={val.base}
-                onClick={props.onClick}
-                onDelete={props.onDelete}
-                handleDrag={handleDrag}
-                handleDrop={handleDrop}
-                pinned={val.pinned}
-                key={ind}
-            />
+    const buildSchemes = () => {
+        return schemes.map(({ scheme, shades, type, base, pinned }, index) => {
+            const schemeProps = {
+                key: `scheme-${base}-${index}`,
+                index,
+                scheme,
+                shades,
+                type,
+                base,
+                pinned,
+                onClick,
+                onDelete,
+                handleDrop,
+                handleDrag,
+                handleBuildShades
+            }
+
+            return <Scheme {...schemeProps} />
         })
     }
 
-    return <Container id="schemeBox">
-        {schemes()}
-    </Container>
+    return <Row id="schemeBox" className="flex-column-reverse">
+        {buildSchemes()}
+    </Row>
 }
 
 export default SchemeBox

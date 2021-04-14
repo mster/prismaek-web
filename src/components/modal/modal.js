@@ -1,13 +1,9 @@
-'use strict'
-
 import { Modal, Row, Col, Button } from 'react-bootstrap' 
 
 import './modal.css'
 
 function ModalView (props) {
-
-
-    return <Modal size="xl" show={props.show} onHide={props.handleClose}>
+    return <Modal size="xl" show={props.show} onHide={props.handleClose} animation={false}>
         <Modal.Header closeButton>
             <Modal.Title>
                 {props.type}

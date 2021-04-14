@@ -23,7 +23,7 @@ class Page extends Component {
         const pinnedSchemes = cookies.get('pinned-schemes') || []
 
         this.state = {
-            base: '#31609B',
+            base: '#289865',
             schemes: pinnedSchemes,
             harmonies: [],
             error: false
@@ -63,9 +63,10 @@ class Page extends Component {
         const hexCode = this.state.base.replace('#', '')
         const url = `${process.env.REACT_APP_API_BASE_URL}/scheme?base=${hexCode}&type=${schemeType}`
 
-        axios.get(url)
+        axios
+        .get(url)
         .then(response => {
-            this.setState({ schemes: [response.data, ...this.state.schemes ]})
+            this.setState({ schemes: [...this.state.schemes, response.data ]})
         })
         .catch(error => {
             console.error(error)
@@ -76,15 +77,28 @@ class Page extends Component {
         console.log('delete scheme', index)
 
         if (this.state.schemes.length > 1) {
-            const updatedSchemes = this.state.schemes
-            updatedSchemes.splice(index, 1)
-
-            this.setState({ schemes: updatedSchemes })
-
+            const schemes = this.state.schemes.slice();
+            schemes.splice(index, 1);
+            this.setState({ schemes })
             return
         }
 
         this.setState({ schemes: [] })
+    }
+
+    handleBuildShades = (index) => {
+        const schemeQuery = this.state.schemes[index].scheme.join(',')
+        axios
+        .get(`${process.env.REACT_APP_API_BASE_URL}/shades?base=${schemeQuery}&step=0.1&count=6`)
+        .then(({ data }) => {
+            const schemes = this.state.schemes;
+            schemes[index].shades = data;
+
+            this.setState({ schemes })
+        })
+        .catch(error => {
+            console.error(error);
+        })
     }
 
     render () {
@@ -106,9 +120,10 @@ class Page extends Component {
                 />
                 <SchemeBox
                     schemes={this.state.schemes} 
+                    setSchemes={this.handleSetSchemes}
                     onClick={this.handleOnClickHex} 
                     onDelete={this.handleDeleteScheme}
-                    setSchemes={this.handleSetSchemes}
+                    handleBuildShades={this.handleBuildShades}
                 />
             </div>
         )

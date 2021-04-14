@@ -11,14 +11,15 @@ function ButtonBox (props) {
             const parts = val.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1)
             const text = parts.map(str => str.charAt(0).toUpperCase() + str.slice(1)).join(' ')
 
-            return <div key={ind} style={{ display: 'inline' }}>
-                    <Button
+            return <div key={ind} className={"button"}>
+                <Button
                         id={val}
                         onClick={props.handler}
                         text={text}
                         variant={props.variant || "primary"}
                     />
-                </div>
+            </div>
+
         })}
     </Container>
 }

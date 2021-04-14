@@ -8,25 +8,26 @@ import {
 
 import './button.css'
 
-function Button (props) {
+const Button = React.forwardRef((props, ref) => {
     /* button props */
     const buttonProps = {
         id: props.id || null,
         onClick: props.onClick || (() => {}),
         variant: props.variant || 'primary',
+        className: props.className || null
     }
 
     if (props.tooltipText) {
         /* overlay trigger props */
         const overlayTriggerProps = {
-            delay: props.delay || { show: 200, hide: 800 },
+            delay: props.delay || { show: 200, hide: 600 },
             placement: props.placement || "right",
-            overlay: props.overlay || renderTooltip.apply(null, [props.tooltipText]),
+            overlay: props.overlay || (() => <Tooltip id="tooltip">{props.tooltipText}</Tooltip>).apply(this),
             animation: false
         }
 
-        return <div className="button">
-            <OverlayTrigger {...overlayTriggerProps}>
+        return <div className="button" ref={ref}>
+            <OverlayTrigger {...overlayTriggerProps} transition={false}>
                     <BootstrapButton {...buttonProps} className="button">
                         {props.icon}{props.text ? ` ${props.text}`: ''}
                     </BootstrapButton>
@@ -37,15 +38,11 @@ function Button (props) {
     }
 
 
-    return <div className="button">
-        <BootstrapButton {...buttonProps} className="button">
+    return <div className="button" ref={ref}>
+        <BootstrapButton {...buttonProps} className="button dp02">
            {props.icon}{props.text ? ` ${props.text}`: ''}
         </BootstrapButton>
     </div>
-}
-
-function renderTooltip (text) {
-    return <Tooltip id="tooltip">{text}</Tooltip>
-}
+})
 
 export default Button

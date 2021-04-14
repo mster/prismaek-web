@@ -2,6 +2,17 @@
     font-weight: bold;
     margin-top: 5%;
     color: white;
+    font-size: medium;
+    opacity: 0.9;
+}
+
+.shade-hex-text {
+    font-weight: 200;
+    margin-top: 2%;
+    margin-bottom: 20%;
+    color: white;
+    font-size: small;
+    opacity: 0.7;
 }
 
 .scheme-button {
@@ -12,6 +23,6 @@
 .scheme {
     border-radius: 1em;
     overflow: hidden;
-    box-shadow: 0px 2px 4px 0px #000000;
+    box-shadow: 0px 5px 6px 0px #000000;
     margin-bottom: 2%
 }
