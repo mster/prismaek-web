@@ -2,7 +2,7 @@ import { Container, Row } from 'react-bootstrap'
 
 import Scheme from '../scheme/scheme'
 
-function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildShades }) {
+function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildEffect }) {
     let id;
 
     const handleDrag = (event) => {
@@ -26,12 +26,13 @@ function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildShades 
     }
 
     const buildSchemes = () => {
-        return schemes.map(({ scheme, shades, type, base, pinned }, index) => {
+        return schemes.map(({ scheme, shade, tint, type, base, pinned }, index) => {
             const schemeProps = {
                 key: `scheme-${base}-${index}`,
                 index,
                 scheme,
-                shades,
+                shade,
+                tint,
                 type,
                 base,
                 pinned,
@@ -39,7 +40,7 @@ function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildShades 
                 onDelete,
                 handleDrop,
                 handleDrag,
-                handleBuildShades
+                handleBuildEffect
             }
 
             return <Scheme {...schemeProps} />

@@ -26,15 +26,27 @@ class Page extends Component {
             base: '#289865',
             schemes: pinnedSchemes,
             harmonies: [],
+            effects: [],
             error: false
         }
     }
 
     componentDidMount () {
+        /* get available harmonies */
         axios
         .get(`${process.env.REACT_APP_API_BASE_URL}/harmonies`)
         .then(({ data }) => {
             this.setState({ harmonies: data })
+        })
+        .catch(err => {
+            if (err) this.setState({ error: true })
+        })
+
+        /* get available effects */
+        axios
+        .get(`${process.env.REACT_APP_API_BASE_URL}/effects`)
+        .then(({ data }) => {
+            this.setState({ effects: data })
         })
         .catch(err => {
             if (err) this.setState({ error: true })
@@ -86,15 +98,20 @@ class Page extends Component {
         this.setState({ schemes: [] })
     }
 
-    handleBuildShades = (index) => {
-        const schemeQuery = this.state.schemes[index].scheme.join(',')
+    handleBuildEffect = (index, effectName) => {
+        console.log(effectName)
+        if(!this.state.effects.includes(effectName)) return;
+
+        console.log("building effect:", effectName);
+        const baseColorQuery = this.state.schemes[index].scheme.join(',');
+
         axios
-        .get(`${process.env.REACT_APP_API_BASE_URL}/shades?base=${schemeQuery}&step=0.1&count=6`)
+        .get(`${process.env.REACT_APP_API_BASE_URL}/effects/${effectName}?base=${baseColorQuery}&step=0.18&count=5`)
         .then(({ data }) => {
             const schemes = this.state.schemes;
-            schemes[index].shades = data;
+            schemes[index][effectName] = data;
 
-            this.setState({ schemes })
+            this.setState({ schemes });
         })
         .catch(error => {
             console.error(error);
@@ -123,7 +140,7 @@ class Page extends Component {
                     setSchemes={this.handleSetSchemes}
                     onClick={this.handleOnClickHex} 
                     onDelete={this.handleDeleteScheme}
-                    handleBuildShades={this.handleBuildShades}
+                    handleBuildEffect={this.handleBuildEffect}
                 />
             </div>
         )

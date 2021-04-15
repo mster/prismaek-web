@@ -25,10 +25,11 @@ class Scheme extends Component {
             show: false,
             expanded: false,
             scheme: props.scheme,
-            shades: props.shades,
-            index: props.index,
+            shade: props.shade,
+            tint: props.tint,
             type: props.type,
             base: props.base,
+            index: props.index,
             id: `${props.base}-${Math.round(Math.random() * 1000)}`
         }
 
@@ -38,14 +39,15 @@ class Scheme extends Component {
         this.handleDrop = props.handleDrop.bind(this);
         this.onClick = props.onClick.bind(this);
         this.onDelete = props.onDelete.bind(this, this.state.index);
-        this.handleBuildShades = props.handleBuildShades.bind(this, this.state.index);
+        this.handleBuildEffect = props.handleBuildEffect.bind(this, this.state.index);
     }
 
     componentDidUpdate(prev){
-        if (prev.scheme !== this.props.scheme || prev.shades !== this.props.shades) {
+        if (prev.scheme !== this.props.scheme || prev.shade !== this.props.shade || prev.tint !== this.props.tint) {
             this.setState({
                 scheme: this.props.scheme,
-                shades: this.props.shades
+                shade: this.props.shade,
+                tint: this.props.tint
             })
         }
 
@@ -77,8 +79,12 @@ class Scheme extends Component {
     }
 
     handleExpand = () => {
-        if (!this.state.shades || Object.keys(this.state.shades) === 0) {
-            this.handleBuildShades();
+        if (!this.state.shade || Object.keys(this.state.shade) === 0) {
+            this.handleBuildEffect("shade");
+        }
+
+        if (!this.state.tint || Object.keys(this.state.tint) === 0) {
+            this.handleBuildEffect("tint");
         }
 
         this.setState({
@@ -140,6 +146,7 @@ class Scheme extends Component {
             return (this.state.expanded ? 
                 <Col key={index}>
                     <Row className="align-items-center">
+                        {this.tints(index)}
                         <Col key={index} style={style} onClick={this.onClick} id={value}>
                             <p className="hex-text" id={value}>{value}</p>
                             <br/><br/>
@@ -156,14 +163,30 @@ class Scheme extends Component {
 
     /* build shades */
     shades = (index) => {
-        if (!this.state.shades || Object.keys(this.state.shades) === 0) return
+        if (!this.state.shade || Object.keys(this.state.shade) === 0) return
 
-        let shadeArrs = Object.values(this.state.shades);
+        let shadeArrs = Object.values(this.state.shade);
         shadeArrs.splice(0, 1);
 
         return shadeArrs.map((shadeArr, shadeIndex) => {
             const hex = `#${shadeArr[index]}`
             return <Col xs={12} key={`shade-${shadeIndex}`} onClick={this.onClick} style={{ backgroundColor: hex }} id={hex}>
+                <p className="shade-hex-text" id={hex}>{hex}</p>
+            </Col>
+        })
+    }
+
+    /* build tints */
+    tints = (index) => {
+        if (!this.state.tint || Object.keys(this.state.tint) === 0) return
+
+        let tintArrs = Object.values(this.state.tint);
+        tintArrs.splice(0, 1);
+        tintArrs = tintArrs.reverse();
+
+        return tintArrs.map((tintArr, tintIndex) => {
+            const hex = `#${tintArr[index]}`
+            return <Col xs={12} key={`shade-${tintIndex}`} onClick={this.onClick} style={{ backgroundColor: hex }} id={hex}>
                 <p className="shade-hex-text" id={hex}>{hex}</p>
             </Col>
         })
