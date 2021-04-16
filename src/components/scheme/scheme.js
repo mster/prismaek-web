@@ -11,7 +11,6 @@ import copyToClipboard from '../../utils/clipboard'
 
 import './scheme.css'
 
-
 class Scheme extends Component {
     static propTypes = {
         cookies: instanceOf(Cookies).isRequired
@@ -30,13 +29,13 @@ class Scheme extends Component {
             type: props.type,
             base: props.base,
             index: props.index,
-            id: `${props.base}-${Math.round(Math.random() * 1000)}`
+            id: `${Math.round(Math.random() * 1000)}`
         }
 
         console.log(`constructed id=${this.state.id}`);
 
-        this.handleDrag = props.handleDrag.bind(this);
-        this.handleDrop = props.handleDrop.bind(this);
+        this.handleDrag = props.handleDrag.bind(this, this.state.index);
+        this.handleDrop = props.handleDrop.bind(this, this.state.index);
         this.onClick = props.onClick.bind(this);
         this.onDelete = props.onDelete.bind(this, this.state.index);
         this.handleBuildEffect = props.handleBuildEffect.bind(this, this.state.index);
@@ -214,7 +213,7 @@ class Scheme extends Component {
     copyGradient = (gradient) => {
         try {
             const stringified = JSON.stringify(gradient)
-            const css = stringified.replace(/(")/gm, '')
+            const css = stringified.replace(/["{}]*/gm, '')
             copyToClipboard(css)
         } catch (error) {
             console.error(error)

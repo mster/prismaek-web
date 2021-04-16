@@ -9,8 +9,6 @@ import copyToClipboard from '../../utils/clipboard'
 
 import { loadPrismockFX, buildScheme, buildEffects } from '../../services/prismock-service'
 
-import axios from 'axios'
-
 import './page.css'
 
 class Page extends Component {

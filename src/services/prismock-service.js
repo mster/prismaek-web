@@ -23,7 +23,5 @@ export const buildScheme = (base, type) => {
 export const buildEffects = (base, type) => {
     if(!effects[type]) throw new Error(`Unable to build effects using effect type: ${type}`);
 
-    console.log(base)
-
     return effects[type](base)
 }

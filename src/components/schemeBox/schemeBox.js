@@ -1,28 +1,26 @@
 import { Container, Row } from 'react-bootstrap'
+import { useState } from 'react'
 
 import Scheme from '../scheme/scheme'
 
 function SchemeBox ({ schemes, setSchemes, onClick, onDelete, handleBuildEffect }) {
     let id;
 
-    const handleDrag = (event) => {
-        id = Number(event.target.id);
-
-        console.log(id);
+    const handleDrag = (index, event) => {
+        console.log(`Dragging scheme index: ${index}`)
+        id = index;
     }
 
-    const handleDrop = (event) => {
-        const dropIndex = event.currentTarget.id;
-        const dragIndex = id
-        console.log("dropIndex=",dropIndex)
+    const handleDrop = (index, event) => {
+        console.log(`Dropping on scheme index: ${index}`)
+        let newSchemeState = schemes.slice();
 
-        const newState = schemes
-        const removed = newState.splice(dragIndex, 1)
+        const shifted = newSchemeState.splice(id, 1);
+        newSchemeState.splice(index, 0, shifted[0]);
 
-        console.log('removed=',removed)
-        newState.splice(dropIndex, 0, removed[0])
-
-        setSchemes(newState)
+        console.log("post", newSchemeState);
+        console.log("new length=", newSchemeState.length)
+        setSchemes(newSchemeState);
     }
 
     const buildSchemes = () => {
