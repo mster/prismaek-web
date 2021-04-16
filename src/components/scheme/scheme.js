@@ -137,26 +137,26 @@ class Scheme extends Component {
     /* build scheme */
     scheme = () => {
         return this.state.scheme.map((value, index) => {
-            value = `#${value}`
+            const hex = `#${value}`
             const style = {
-                backgroundColor: value,
+                backgroundColor: hex,
                 height: this.state.expanded ? '100%' : 'auto'
             }
+
+            const baseColumn = <Col key={index} style={style} onClick={this.onClick} id={hex}>
+                <p className="hex-text" id={hex}>{hex}</p>
+                <br/><br/>
+            </Col>
 
             return (this.state.expanded ? 
                 <Col key={index}>
                     <Row className="align-items-center">
                         {this.tints(index)}
-                        <Col key={index} style={style} onClick={this.onClick} id={value}>
-                            <p className="hex-text" id={value}>{value}</p>
-                            <br/><br/>
-                        </Col>
+                        {baseColumn}
                         {this.shades(index)}
                     </Row>
                 </Col> : 
-                <Col key={index} style={style} onClick={this.onClick} id={value}>
-                    <p className="hex-text" id={value}>{value}</p>
-                </Col>
+                baseColumn
             )
         })
     }
@@ -170,7 +170,7 @@ class Scheme extends Component {
 
         return shadeArrs.map((shadeArr, shadeIndex) => {
             const hex = `#${shadeArr[index]}`
-            return <Col xs={12} key={`shade-${shadeIndex}`} onClick={this.onClick} style={{ backgroundColor: hex }} id={hex}>
+            return <Col xs={12} key={`shade-${shadeIndex}`} onClick={this.onClick} className="col-effects" style={{ backgroundColor: hex }}  id={hex}>
                 <p className="shade-hex-text" id={hex}>{hex}</p>
             </Col>
         })
@@ -186,7 +186,7 @@ class Scheme extends Component {
 
         return tintArrs.map((tintArr, tintIndex) => {
             const hex = `#${tintArr[index]}`
-            return <Col xs={12} key={`shade-${tintIndex}`} onClick={this.onClick} style={{ backgroundColor: hex }} id={hex}>
+            return <Col xs={12} key={`shade-${tintIndex}`} onClick={this.onClick} className="col-effects" style={{ backgroundColor: hex }} id={hex}>
                 <p className="shade-hex-text" id={hex}>{hex}</p>
             </Col>
         })

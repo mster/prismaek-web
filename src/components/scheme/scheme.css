@@ -15,6 +15,10 @@
     opacity: 0.7;
 }
 
+.col-effects {
+    height: 50px;
+}
+
 .scheme-button {
     margin: 5%;
     margin-top: 15%;

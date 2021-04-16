@@ -7,6 +7,8 @@ import ColorPicker from '../colorPicker/colorPicker'
 import ButtonBox from '../buttonBox/buttonBox'
 import copyToClipboard from '../../utils/clipboard'
 
+import { loadPrismockFX, buildScheme, buildEffects } from '../../services/prismock-service'
+
 import axios from 'axios'
 
 import './page.css'
@@ -32,25 +34,8 @@ class Page extends Component {
     }
 
     componentDidMount () {
-        /* get available harmonies */
-        axios
-        .get(`${process.env.REACT_APP_API_BASE_URL}/harmonies`)
-        .then(({ data }) => {
-            this.setState({ harmonies: data })
-        })
-        .catch(err => {
-            if (err) this.setState({ error: true })
-        })
-
-        /* get available effects */
-        axios
-        .get(`${process.env.REACT_APP_API_BASE_URL}/effects`)
-        .then(({ data }) => {
-            this.setState({ effects: data })
-        })
-        .catch(err => {
-            if (err) this.setState({ error: true })
-        })
+        const [ harmonies, effects ] = loadPrismockFX();
+        this.setState({ harmonies, effects })
     }
     
     handleColorUpdate = ({ hex }) => {
@@ -71,18 +56,10 @@ class Page extends Component {
     }
 
     handleBuildScheme = ({ target }) => {
-        const schemeType = target.id
-        const hexCode = this.state.base.replace('#', '')
-        const url = `${process.env.REACT_APP_API_BASE_URL}/scheme?base=${hexCode}&type=${schemeType}`
+        const type = target.id
+        const newScheme = buildScheme(this.state.base, type)
 
-        axios
-        .get(url)
-        .then(response => {
-            this.setState({ schemes: [...this.state.schemes, response.data ]})
-        })
-        .catch(error => {
-            console.error(error)
-        })
+        this.setState({ schemes: [...this.state.schemes, newScheme ]})
     }
 
     handleDeleteScheme = (index) => {
@@ -98,24 +75,15 @@ class Page extends Component {
         this.setState({ schemes: [] })
     }
 
-    handleBuildEffect = (index, effectName) => {
-        console.log(effectName)
-        if(!this.state.effects.includes(effectName)) return;
+    handleBuildEffect = (index, type) => {
+        if(!this.state.effects.includes(type)) return;
 
-        console.log("building effect:", effectName);
-        const baseColorQuery = this.state.schemes[index].scheme.join(',');
+        const effects = buildEffects(this.state.schemes[index].scheme, type);
 
-        axios
-        .get(`${process.env.REACT_APP_API_BASE_URL}/effects/${effectName}?base=${baseColorQuery}&step=0.18&count=5`)
-        .then(({ data }) => {
-            const schemes = this.state.schemes;
-            schemes[index][effectName] = data;
+        const schemes = this.state.schemes.slice();
+        schemes[index][type] = effects;
 
-            this.setState({ schemes });
-        })
-        .catch(error => {
-            console.error(error);
-        })
+        this.setState({ schemes })
     }
 
     render () {
