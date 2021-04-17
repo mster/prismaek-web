@@ -54,8 +54,11 @@ class Page extends Component {
     }
 
     handleBuildScheme = ({ target }) => {
-        const type = target.id
-        const newScheme = buildScheme(this.state.base, type)
+        const newScheme = {
+            base: this.state.base,
+            type: target.id,
+            pinned: false
+        }
 
         this.setState({ schemes: [...this.state.schemes, newScheme ]})
     }
@@ -63,9 +66,14 @@ class Page extends Component {
     handleDeleteScheme = (index) => {
         console.log('delete scheme', index)
 
+        console.log("prev", this.state.schemes.slice())
+
         if (this.state.schemes.length > 1) {
-            const schemes = this.state.schemes.slice();
+            const schemes = this.state.schemes.slice()
             schemes.splice(index, 1);
+
+            console.log("post", schemes)
+
             this.setState({ schemes })
             return
         }
@@ -103,9 +111,9 @@ class Page extends Component {
                 />
                 <SchemeBox
                     schemes={this.state.schemes} 
-                    setSchemes={this.handleSetSchemes}
-                    onClick={this.handleOnClickHex} 
-                    onDelete={this.handleDeleteScheme}
+                    handleSchemeUpdate={this.handleSetSchemes}
+                    handleClick={this.handleOnClickHex} 
+                    handleDelete={this.handleDeleteScheme}
                     handleBuildEffect={this.handleBuildEffect}
                 />
             </div>

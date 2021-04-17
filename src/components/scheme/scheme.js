@@ -9,6 +9,8 @@ import Modal from '../modal/modal'
 import Button from '../button/button'
 import copyToClipboard from '../../utils/clipboard'
 
+import { buildScheme, buildEffects } from '../../services/prismock-service'
+
 import './scheme.css'
 
 class Scheme extends Component {
@@ -20,70 +22,53 @@ class Scheme extends Component {
         super(props);
 
         this.state = {
-            pinned: props.pinned == null ? false : props.pinned,
+            pinned: props.pinned || false,
             show: false,
             expanded: false,
-            scheme: props.scheme,
-            shade: props.shade,
-            tint: props.tint,
-            type: props.type,
             base: props.base,
+            type: props.type,
             index: props.index,
-            id: `${Math.round(Math.random() * 1000)}`
+            id: props.index,
+            scheme: null,
+            tints: null,
+            shades: null
         }
 
-        console.log(`constructed id=${this.state.id}`);
+        this.state.scheme = buildScheme(this.state.base, this.state.type)
 
-        this.handleDrag = props.handleDrag.bind(this, this.state.index);
-        this.handleDrop = props.handleDrop.bind(this, this.state.index);
-        this.onClick = props.onClick.bind(this);
-        this.onDelete = props.onDelete.bind(this, this.state.index);
-        this.handleBuildEffect = props.handleBuildEffect.bind(this, this.state.index);
+        this.handleClick = props.handleClick.bind(this);
+        // this.handleSchemeUpdate = props.handleSchemeUpdate.bind(this);
+
+        this.handleDelete = props.handleDelete.bind(this, this.state.index);
+        this.handleDrag = props.handleDrag
+        this.handleDrop = props.handleDrop
     }
 
     componentDidUpdate(prev){
-        if (prev.scheme !== this.props.scheme || prev.shade !== this.props.shade || prev.tint !== this.props.tint) {
+        if (prev.index !== this.props.index || prev.type !== this.props.type || prev.base !== this.props.base) {
             this.setState({
-                scheme: this.props.scheme,
-                shade: this.props.shade,
-                tint: this.props.tint
-            })
-        }
-
-        if (prev.type !== this.props.type || prev.base !== this.props.base) {
-            this.setState({
-                type: this.props.type,
-                base: this.props.base
-            })
-        }
-
-        if (prev.pinned !== this.props.pinned){
-            this.setState({
-                pinned: this.props.pinned || false
-            })
-        }
-
-        if (prev.index !== this.props.index || prev.expanded !== this.props.expanded){
-            this.setState({
+                id: this.props.index,
                 index: this.props.index,
-                expanded: this.props.expanded
+                base: this.props.base,
+                type: this.props.type,
+                scheme: buildScheme(this.props.base, this.props.type)
             })
-        }
+        } 
     }
 
     handleShow = () => {
-        this.setState({
-            show: !this.state.show
-        })
+        this.setState({ show: !this.state.show })
     }
 
     handleExpand = () => {
-        if (!this.state.shade || Object.keys(this.state.shade) === 0) {
-            this.handleBuildEffect("shade");
+        if (!this.state.shades || Object.keys(this.state.shades) === 0) {
+            const shades = buildEffects(this.state.scheme, "shade");
+            this.setState({ shades })
         }
 
-        if (!this.state.tint || Object.keys(this.state.tint) === 0) {
-            this.handleBuildEffect("tint");
+        if (!this.state.tints || Object.keys(this.state.tints) === 0) {
+            const tints = buildEffects(this.state.scheme, "tint");
+            this.setState({ tints })
         }
 
         this.setState({
@@ -103,12 +88,7 @@ class Scheme extends Component {
             cookies.set(
                 "pinned-schemes",
                 [
-                    { 
-                        scheme: this.state.scheme,
-                        type: this.state.type,
-                        base: this.state.base,
-                        pinned: true
-                    },
+                    { type: this.state.type, base: this.state.base, pinned: true },
                     ...existing
                 ]
             )
@@ -162,9 +142,9 @@ class Scheme extends Component {
 
     /* build shades */
     shades = (index) => {
-        if (!this.state.shade || Object.keys(this.state.shade) === 0) return
+        if (!this.state.shades || Object.keys(this.state.shades) === 0) return
 
-        let shadeArrs = Object.values(this.state.shade);
+        let shadeArrs = Object.values(this.state.shades);
         shadeArrs.splice(0, 1);
 
         return shadeArrs.map((shadeArr, shadeIndex) => {
@@ -177,9 +157,9 @@ class Scheme extends Component {
 
     /* build tints */
     tints = (index) => {
-        if (!this.state.tint || Object.keys(this.state.tint) === 0) return
+        if (!this.state.tints || Object.keys(this.state.tints) === 0) return
 
-        let tintArrs = Object.values(this.state.tint);
+        let tintArrs = Object.values(this.state.tints);
         tintArrs.splice(0, 1);
         tintArrs = tintArrs.reverse();
 
@@ -244,7 +224,7 @@ class Scheme extends Component {
                             ref={ref}
                             variant={"outline-light"}
                             icon={<Trash/>}
-                            onClick={this.onDelete.bind(null, this.state.index)}
+                            onClick={this.handleDelete}
                             key={`delete-${this.state.index}`}
                         />
                         <Button
@@ -275,7 +255,6 @@ class Scheme extends Component {
             </Container>
         </Col>
     }
-    
 }
 
 export default withCookies(Scheme)

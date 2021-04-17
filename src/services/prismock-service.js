@@ -14,7 +14,7 @@ export const buildScheme = (base, type) => {
 
         const scheme = harmonies[type](base).map(utils.HSV2Hex);
 
-        return { base, type, scheme }
+        return scheme
     }
 
     throw new Error(`Invalid base color format: ${base}`)
