@@ -2,10 +2,13 @@ import { Component } from 'react'
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 
+import { Row } from 'react-bootstrap'
+
 import SchemeBox from '../schemeBox/schemeBox'
 import ColorPicker from '../colorPicker/colorPicker'
 import ButtonBox from '../buttonBox/buttonBox'
 import copyToClipboard from '../../utils/clipboard'
+import Scheme from '../scheme/scheme'
 
 import { loadPrismockFX, buildScheme, buildEffects } from '../../services/prismock-service'
 
@@ -69,7 +72,7 @@ class Page extends Component {
         console.log("prev", this.state.schemes.slice())
 
         if (this.state.schemes.length > 1) {
-            const schemes = this.state.schemes.slice()
+            const schemes = this.state.schemes
             schemes.splice(index, 1);
 
             console.log("post", schemes)
@@ -88,6 +91,21 @@ class Page extends Component {
 
         const schemes = this.state.schemes.slice();
         schemes[index][type] = effects;
+
+        this.setState({ schemes })
+    }
+
+    handleSchemeReorder (dragIndex, dropIndex) {
+        if (dragIndex === dropIndex) return
+
+        if (isNaN(dragIndex) || isNaN(dropIndex)) {
+            console.error(`Drag or drop index is NaN: dragIndex=${dragIndex} drop=${dropIndex}`)
+            return
+        }
+
+        const schemes = this.state.schemes.slice();
+        const removed = schemes.splice(dragIndex, 1);
+        schemes.splice(dropIndex, 0, removed[0])
 
         this.setState({ schemes })
     }
@@ -115,6 +133,7 @@ class Page extends Component {
                     handleClick={this.handleOnClickHex} 
                     handleDelete={this.handleDeleteScheme}
                     handleBuildEffect={this.handleBuildEffect}
+                    handleSchemeReorder={this.handleSchemeReorder.bind(this)}
                 />
             </div>
         )

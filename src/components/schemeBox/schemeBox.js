@@ -1,30 +1,17 @@
-import { Container, Row } from 'react-bootstrap'
-import React, { useCallback, useEffect, useReducer, useState } from 'react'
+import { Row } from 'react-bootstrap'
 
 import Scheme from '../scheme/scheme'
 
-const SchemeBox = ({ schemes, handleClick, handleDelete }) => {
-    const [dragIndex, updateDrag] = useState();
-
-    const handleDrag = (ev) => {
-        updateDrag({ index: ev.target.id })
-    }
-
-    const handleDrop = ({ currentTarget }) => {
-        console.log("drag", dragIndex)
-        console.log("drop", currentTarget.id)
-    }
-
+const SchemeBox = ({ schemes, handleClick, handleDelete, handleSchemeReorder }) => {
     return <Row id="schemeBox" className="flex-column-reverse">
         {schemes.map((scheme, index) => {
-            return <Scheme 
+            return <Scheme
                 {...scheme}
-                key={index}
+                key={`${scheme.type}-${scheme.base}`}
                 index={index}
-                handleDrag={handleDrag}
-                handleDrop={handleDrop}
                 handleDelete={handleDelete}
                 handleClick={handleClick}
+                handleSchemeReorder={handleSchemeReorder}
             />
         })}
     </Row>

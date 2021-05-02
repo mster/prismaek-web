@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { PhotoshopPicker } from 'react-color';
+import { PhotoshopPicker, CustomPicker } from 'react-color';
 
 import './colorPicker.css'
 
@@ -16,4 +16,4 @@ class ColorPicker extends Component {
     }
 }
 
-export default ColorPicker
+export default CustomPicker(ColorPicker)

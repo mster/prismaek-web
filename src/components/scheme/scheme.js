@@ -4,12 +4,17 @@ import { Container, Row, Col, Badge } from 'react-bootstrap'
 import { ArrowsFullscreen, Pin, PinFill, ArrowsExpand, ArrowsCollapse, Trash } from 'react-bootstrap-icons'
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
+import { getEmptyImage } from "react-dnd-html5-backend";
+
+import { DragSource, DropTarget} from 'react-dnd'
 
 import Modal from '../modal/modal'
 import Button from '../button/button'
-import copyToClipboard from '../../utils/clipboard'
 
 import { buildScheme, buildEffects } from '../../services/prismock-service'
+import Shades from './effects/shades'
+import Tints from './effects/tints'
+import GradientBar from './effects/gradientBar'
 
 import './scheme.css'
 
@@ -28,17 +33,12 @@ class Scheme extends Component {
             base: props.base,
             type: props.type,
             index: props.index,
-            id: props.index,
-            scheme: null,
+            scheme: buildScheme(props.base, props.type),
             tints: null,
             shades: null
         }
 
-        this.state.scheme = buildScheme(this.state.base, this.state.type)
-
         this.handleClick = props.handleClick.bind(this);
-        // this.handleSchemeUpdate = props.handleSchemeUpdate.bind(this);
-
         this.handleDelete = props.handleDelete.bind(this, this.state.index);
         this.handleDrag = props.handleDrag
         this.handleDrop = props.handleDrop
@@ -47,13 +47,12 @@ class Scheme extends Component {
     componentDidUpdate(prev){
         if (prev.index !== this.props.index || prev.type !== this.props.type || prev.base !== this.props.base) {
             this.setState({
-                id: this.props.index,
                 index: this.props.index,
                 base: this.props.base,
                 type: this.props.type,
                 scheme: buildScheme(this.props.base, this.props.type)
             })
-        } 
+        }
     }
 
     handleShow = () => {
@@ -85,13 +84,8 @@ class Scheme extends Component {
         const existing = cookies.get("pinned-schemes") || [];
 
         if (!this.state.pinned) {
-            cookies.set(
-                "pinned-schemes",
-                [
-                    { type: this.state.type, base: this.state.base, pinned: true },
-                    ...existing
-                ]
-            )
+            const schemeData = { type: this.state.type, base: this.state.base, pinned: true }
+            cookies.set("pinned-schemes", [schemeData, ...existing ])
             
         }
 
@@ -122,7 +116,7 @@ class Scheme extends Component {
                 height: this.state.expanded ? '100%' : 'auto'
             }
 
-            const baseColumn = <Col key={index} style={style} onClick={this.onClick} id={hex}>
+            const baseColumn = <Col key={index} style={style} onClick={this.handleClick} id={hex}>
                 <p className="hex-text" id={hex}>{hex}</p>
                 <br/><br/>
             </Col>
@@ -130,9 +124,9 @@ class Scheme extends Component {
             return (this.state.expanded ? 
                 <Col key={index}>
                     <Row className="align-items-center">
-                        {this.tints(index)}
+                        <Tints index={index} tints={this.state.tints} handleClick={this.handleClick}/>
                         {baseColumn}
-                        {this.shades(index)}
+                        <Shades index={index} shades={this.state.shades} handleClick={this.handleClick}/>
                     </Row>
                 </Col> : 
                 baseColumn
@@ -140,121 +134,86 @@ class Scheme extends Component {
         })
     }
 
-    /* build shades */
-    shades = (index) => {
-        if (!this.state.shades || Object.keys(this.state.shades) === 0) return
-
-        let shadeArrs = Object.values(this.state.shades);
-        shadeArrs.splice(0, 1);
-
-        return shadeArrs.map((shadeArr, shadeIndex) => {
-            const hex = `#${shadeArr[index]}`
-            return <Col xs={12} key={`shade-${shadeIndex}`} onClick={this.onClick} className="col-effects" style={{ backgroundColor: hex }}  id={hex}>
-                <p className="shade-hex-text" id={hex}>{hex}</p>
-            </Col>
-        })
-    }
-
-    /* build tints */
-    tints = (index) => {
-        if (!this.state.tints || Object.keys(this.state.tints) === 0) return
-
-        let tintArrs = Object.values(this.state.tints);
-        tintArrs.splice(0, 1);
-        tintArrs = tintArrs.reverse();
-
-        return tintArrs.map((tintArr, tintIndex) => {
-            const hex = `#${tintArr[index]}`
-            return <Col xs={12} key={`shade-${tintIndex}`} onClick={this.onClick} className="col-effects" style={{ backgroundColor: hex }} id={hex}>
-                <p className="shade-hex-text" id={hex}>{hex}</p>
-            </Col>
-        })
-    }
-
-    /* build gradient */
-    gradient = () => {
-        const colors = this.state.scheme.map(s => `#${s}`).join(', ')
-        const dynamicGradient = {
-            background: `linear-gradient(to right, ${colors})`,
-        }
-
-        return <>
-            <Row 
-                key="gradient-bar"
-                style={dynamicGradient} 
-                onClick={this.copyGradient.bind(null, dynamicGradient)}
-            >
-                <br/>
-            </Row>
-        </>
-    }
-
-    /* copies gradient css styling to clipboard */
-    copyGradient = (gradient) => {
-        try {
-            const stringified = JSON.stringify(gradient)
-            const css = stringified.replace(/["{}]*/gm, '')
-            copyToClipboard(css)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     render () {
         const ref = React.createRef();
+        const { connectDragSource, isDragging, connectDropTarget, connectDragPreview } = this.props;
+        connectDragPreview(getEmptyImage());
 
-        return <Col
-            id={this.state.id}
-            key={this.state.index}
-            draggable={true}
-            onDragOver={(event) => event.preventDefault()}
-            onDragStart={this.handleDrag}
-            onDrop={this.handleDrop}
-            xs={{ span: 12 }}
-        >
-            {/* Scheme Modal */}
-            <Modal show={this.state.show} handleClose={this.handleShow} scheme={this.state.scheme}></Modal>
+        return connectDragSource(connectDropTarget(
+            <div style={{ opacity: isDragging ? 0.45 : 1 }}>
+                <Col
+                    key={this.state.key}
+                    xs={{ span: 12 }}
+                >
+                    {/* Scheme Modal */}
+                    <Modal show={this.state.show} handleClose={this.handleShow} scheme={this.state.scheme}/>
 
-            {/* Scheme Container */}
-            <Container className="scheme dp01">
-                <Row key="main-scheme">
-                    <Col lg={1} md={2} style={{ margin: '0.5vw'}} key="buttons">
-                        <Button
-                            className="dp02"
-                            ref={ref}
-                            variant={"outline-light"}
-                            icon={<Trash/>}
-                            onClick={this.handleDelete}
-                            key={`delete-${this.state.index}`}
-                        />
-                        <Button
-                            ref={ref}
-                            variant={"outline-light"}
-                            icon={<ArrowsFullscreen/>}
-                            onClick={this.handleShow}
-                            key={`details-${this.state.index}`}
-                        />
-                        <Button
-                            ref={ref}
-                            variant={this.state.pinned ? "success" : "outline-light"}
-                            icon={this.state.pinned ? <PinFill/> : <Pin/>}
-                            onClick={this.handlePin}
-                            key={`pin-${this.state.index}`}
-                        />
-                        <Button
-                            ref={ref}
-                            variant={"outline-light"}
-                            icon={this.state.expanded ? <ArrowsCollapse/> : <ArrowsExpand/>}
-                            onClick={this.handleExpand}
-                            key={`expand-${this.state.index}`}
-                        />
-                    </Col>
-                    {this.scheme()}
-                </Row>
-                {this.gradient()}
-            </Container>
-        </Col>
+                    {/* Scheme Container */}
+                    <Container className="scheme dp01">
+                        <Row key="main-scheme">
+                            <Col lg={1} md={2} style={{ margin: '0.5vw'}} key="buttons">
+                                <Button
+                                    className="dp02"
+                                    ref={ref}
+                                    variant={"outline-light"}
+                                    icon={<Trash/>}
+                                    onClick={this.handleDelete}
+                                    key={`delete-${this.state.index}`}
+                                />
+                                <Button
+                                    ref={ref}
+                                    variant={"outline-light"}
+                                    icon={<ArrowsFullscreen/>}
+                                    onClick={this.handleShow}
+                                    key={`details-${this.state.index}`}
+                                />
+                                <Button
+                                    ref={ref}
+                                    variant={this.state.pinned ? "success" : "outline-light"}
+                                    icon={this.state.pinned ? <PinFill/> : <Pin/>}
+                                    onClick={this.handlePin}
+                                    key={`pin-${this.state.index}`}
+                                />
+                                <Button
+                                    ref={ref}
+                                    variant={"outline-light"}
+                                    icon={this.state.expanded ? <ArrowsCollapse/> : <ArrowsExpand/>}
+                                    onClick={this.handleExpand}
+                                    key={`expand-${this.state.index}`}
+                                />
+                            </Col>
+                            {this.scheme()}
+                        </Row>
+                        <GradientBar scheme={this.state.scheme}/>
+                    </Container>
+                </Col>
+            </div>
+        ))
     }
 }
+
+let dragIndex;
+const elementSource = {
+    beginDrag (props) {
+        dragIndex = props.index
+        return props
+    }
+}
+
+const elementTarget = {
+    drop (props) { 
+        props.handleSchemeReorder(dragIndex, props.index)
+    }
+}
+
+Scheme = DragSource("Scheme", elementSource , (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging()
+}))(Scheme)
+
+Scheme = DropTarget("Scheme", elementTarget, connect => ({
+    connectDropTarget: connect.dropTarget()
+}))(Scheme)
 
 export default withCookies(Scheme)
