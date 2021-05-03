@@ -22,6 +22,7 @@
     "react-scripts": "4.0.3",
     "reqi": "^1.0.4",
     "universal-cookie": "^4.0.4",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.1.1"
   },
   "scripts": {

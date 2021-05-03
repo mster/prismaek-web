@@ -39,9 +39,6 @@ class Scheme extends Component {
         }
 
         this.handleClick = props.handleClick.bind(this);
-        this.handleDelete = props.handleDelete.bind(this, this.state.index);
-        this.handleDrag = props.handleDrag
-        this.handleDrop = props.handleDrop
     }
 
     componentDidUpdate(prev){
@@ -157,7 +154,7 @@ class Scheme extends Component {
                                     ref={ref}
                                     variant={"outline-light"}
                                     icon={<Trash/>}
-                                    onClick={this.handleDelete}
+                                    onClick={() => this.props.handleDelete(this.state.index)}
                                     key={`delete-${this.state.index}`}
                                 />
                                 <Button
