@@ -2,4 +2,4 @@
 
 See [Prismaek](https://github.com/mster/prismaek).
 
-![prismaek-web](https://user-images.githubusercontent.com/15038724/113499767-6ba34200-94cd-11eb-868b-d91dbd6a5901.png)
+![prismaek-web](https://user-images.githubusercontent.com/15038724/116941154-fd64b300-ac23-11eb-9118-d9c8723d8132.png)
