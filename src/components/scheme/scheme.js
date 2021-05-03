@@ -33,6 +33,7 @@ class Scheme extends Component {
             base: props.base,
             type: props.type,
             index: props.index,
+            uuid: props.uuid,
             scheme: buildScheme(props.base, props.type),
             tints: null,
             shades: null
@@ -49,6 +50,10 @@ class Scheme extends Component {
                 type: this.props.type,
                 scheme: buildScheme(this.props.base, this.props.type)
             })
+        }
+
+        if (prev.pinned !== this.props.pinned) {
+            this.setState({ pinned: this.props.pinned })
         }
     }
 
@@ -81,7 +86,7 @@ class Scheme extends Component {
         const existing = cookies.get("pinned-schemes") || [];
 
         if (!this.state.pinned) {
-            const schemeData = { type: this.state.type, base: this.state.base, pinned: true }
+            const schemeData = { type: this.state.type, base: this.state.base, pinned: true, uuid: this.state.uuid }
             cookies.set("pinned-schemes", [schemeData, ...existing ])
             
         }

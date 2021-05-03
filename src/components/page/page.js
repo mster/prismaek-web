@@ -1,14 +1,12 @@
 import { Component } from 'react'
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-
-import { Row } from 'react-bootstrap'
+import { v1 as uuidv1 } from 'uuid'
 
 import SchemeBox from '../schemeBox/schemeBox'
 import ColorPicker from '../colorPicker/colorPicker'
 import ButtonBox from '../buttonBox/buttonBox'
 import copyToClipboard from '../../utils/clipboard'
-import Scheme from '../scheme/scheme'
 
 import { loadPrismockFX, buildScheme, buildEffects } from '../../services/prismock-service'
 
@@ -60,7 +58,8 @@ class Page extends Component {
         const newScheme = {
             base: this.state.base,
             type: target.id,
-            pinned: false
+            pinned: false,
+            uuid: uuidv1()
         }
 
         this.setState({ schemes: [...this.state.schemes, newScheme ]})
