@@ -1,7 +1,7 @@
 import { Col } from 'react-bootstrap'
 
 function tints ({ tints, index, handleClick }) {
-    if (!tints || Object.keys(tints) === 0) return
+    if (!tints || Object.keys(tints) === 0) return null
 
     let tintMatrix = Object.values(tints);
     tintMatrix.splice(0, 1);

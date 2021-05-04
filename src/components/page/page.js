@@ -8,7 +8,7 @@ import ColorPicker from '../colorPicker/colorPicker'
 import ButtonBox from '../buttonBox/buttonBox'
 import copyToClipboard from '../../utils/clipboard'
 
-import { loadPrismockFX, buildScheme, buildEffects } from '../../services/prismock-service'
+import { loadPrismockFX, buildEffects } from '../../services/prismock-service'
 
 import './page.css'
 
@@ -66,16 +66,11 @@ class Page extends Component {
     }
 
     handleDeleteScheme = (index) => {
-        console.log('delete scheme', index)
-
-        console.log("prev", this.state.schemes.slice())
+        console.log(`deleted scheme with index ${index}`)
 
         if (this.state.schemes.length > 1) {
-            const schemes = this.state.schemes
+            const schemes = this.state.schemes.slice()
             schemes.splice(index, 1);
-
-            console.log("post", schemes)
-
             this.setState({ schemes })
             return
         }
@@ -87,7 +82,6 @@ class Page extends Component {
         if(!this.state.effects.includes(type)) return;
 
         const effects = buildEffects(this.state.schemes[index].scheme, type);
-
         const schemes = this.state.schemes.slice();
         schemes[index][type] = effects;
 

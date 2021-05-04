@@ -1,7 +1,7 @@
 import { Col } from 'react-bootstrap'
 
 function shades ({ shades, index, handleClick }) {
-    if (!shades || Object.keys(shades) === 0) return
+    if (!shades || Object.keys(shades) === 0) return null
 
     let shadeMatrix = Object.values(shades)
     shadeMatrix.splice(0, 1)

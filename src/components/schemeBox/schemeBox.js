@@ -1,11 +1,11 @@
 import { Row } from 'react-bootstrap'
 
-import Scheme from '../scheme/scheme'
+import SchemeController from '../scheme/schemeController'
 
 const SchemeBox = ({ schemes, handleClick, handleDelete, handleSchemeReorder }) => {
     return <Row id="schemeBox" className="flex-column-reverse">
         {schemes.map((scheme, index) => {
-            return <Scheme
+            return <SchemeController
                 {...scheme}
                 key={scheme.uuid}
                 index={index}
